@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">소비요정</string>
+    <string name="service_name">소비요정 쇼핑 감지</string>
+    <string name="a11y_desc">고른 쇼핑 앱이 열리거나 장바구니 · 결제 버튼이 눌리는 순간을 알아채서, 소비 요정이 화면 위에 나타나 질문을 건넬 수 있게 해요. 화면 내용은 저장하거나 밖으로 보내지 않아요.</string>
+</resources>

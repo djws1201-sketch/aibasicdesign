@@ -1,0 +1,50 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Copy the web app into the Android app
+        run: |
+          mkdir -p android/app/src/main/assets/www
+          cp docs/index.html android/app/src/main/assets/www/index.html
+
+      - name: Build APK
+        run: gradle -p android assembleDebug --no-daemon --stacktrace
+
+      - name: Rename APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk sobiyojeong.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sobiyojeong-apk
+          path: sobiyojeong.apk
+
+      - name: Publish to the "apk-latest" release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete apk-latest -y --cleanup-tag || true
+          gh release create apk-latest sobiyojeong.apk \
+            --title "소비요정 Android 앱 (최신)" \
+            --notes "휴대폰에서 sobiyojeong.apk를 내려받아 설치하세요. 설치 방법은 README를 참고해 주세요." \
+            --target "${{ github.sha }}"
